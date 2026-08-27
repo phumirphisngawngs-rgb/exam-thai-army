@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-surface-dim: #161311;
+    --color-surface-container-lowest: #110d0c;
+    --color-surface-container-low: #1f1b19;
+    --color-surface-container: #231f1d;
+    --color-surface-container-high: #2e2927;
+    --color-surface-container-highest: #393431;
+    --color-primary: #f6be39;
+    --color-primary-container: #d4a017;
+    --color-on-surface: #eae1dd;
+    --color-on-surface-variant: #d3c5ae;
+    --color-outline: #9b8f7a;
+    --color-outline-variant: #4f4634;
+  }
+
+  body {
+    background-color: #0F0D0C;
+    background-image: 
+      radial-gradient(circle at 50% 0%, rgba(38, 33, 30, 0.6) 0%, transparent 70%),
+      linear-gradient(to bottom, rgba(15, 13, 12, 0.4), #0F0D0C);
+    color: #eae1dd;
+    font-family: 'Work Sans', 'IBM Plex Sans Thai', -apple-system, sans-serif;
+  }
+
+  h1, h2, h3, .font-headline {
+    font-family: 'Be Vietnam Pro', 'Prompt', sans-serif;
+  }
+
+  .font-mono-military {
+    font-family: 'IBM Plex Sans', monospace;
+  }
+}
+
+/* Metallic & Tactical Military Aesthetic Cards */
+.metallic-card {
+  background-color: #26211E;
+  border: 2px solid rgba(246, 190, 57, 0.45);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(246, 190, 57, 0.15);
+}
+
+.surface-layer {
+  background-color: #1A1614;
+  box-shadow: inset 0 0 0 1px rgba(246, 190, 57, 0.15);
+}
+
+.elevated-card {
+  background-color: #26211E;
+  border: 2px solid rgba(246, 190, 57, 0.5);
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(246, 190, 57, 0.1);
+}
+
+.gold-gradient-text {
+  background: linear-gradient(135deg, #ffdfa0 0%, #f6be39 40%, #de9b32 80%, #d4a017 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-gradient-btn {
+  background: linear-gradient(135deg, #f6be39 0%, #d4a017 100%);
+  border: 1px solid #ffdfa0;
+  box-shadow: 0 4px 15px rgba(246, 190, 57, 0.25);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gold-gradient-btn:hover {
+  background: linear-gradient(135deg, #ffdfa0 0%, #f6be39 100%);
+  box-shadow: 0 6px 22px rgba(246, 190, 57, 0.4);
+}
+
+.input-tactical {
+  background-color: #1A1614;
+  border: 1px solid #4f4634;
+  border-bottom: 2px solid #9b8f7a;
+  transition: all 0.25s ease;
+}
+
+.input-tactical:focus {
+  outline: none;
+  border-bottom-color: #f6be39;
+  border-color: rgba(246, 190, 57, 0.4);
+  box-shadow: 0 4px 14px rgba(246, 190, 57, 0.12);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #110d0c;
+}
+::-webkit-scrollbar-thumb {
+  background: #4f4634;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #f6be39;
+}

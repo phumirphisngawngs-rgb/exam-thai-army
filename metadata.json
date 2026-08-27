@@ -1,0 +1,6 @@
+{
+  "name": "ATEC Military Examination Portal",
+  "description": "Official Military Assessment & Examination Portal for Army Training & Education Command (ATEC)",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
