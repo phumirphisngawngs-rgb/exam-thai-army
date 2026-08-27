@@ -205,7 +205,7 @@ export const VerificationView: React.FC<VerificationViewProps> = ({
                   <div className="flex justify-between pt-2 border-t border-[#4f4634]/60">
                     <span className="text-[#9b8f7a]">คะแนนที่ได้:</span>
                     <span className="text-emerald-400 font-mono-military font-bold">
-                      {selectedSubmission.score} / {selectedSubmission.maxScore || 133}
+                      {selectedSubmission.score} / {selectedSubmission.maxScore || 25}
                     </span>
                   </div>
                 )}

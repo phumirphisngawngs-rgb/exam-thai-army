@@ -345,7 +345,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                         </span>
                         {sub.score !== undefined && (
                           <span className="text-[10px] font-mono-military opacity-90">
-                            คะแนน: {sub.score}/{sub.maxScore || 133}
+                            คะแนน: {sub.score}/{sub.maxScore || 25}
                           </span>
                         )}
                       </span>

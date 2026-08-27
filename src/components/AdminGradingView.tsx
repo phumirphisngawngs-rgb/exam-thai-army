@@ -47,7 +47,7 @@ export const AdminGradingView: React.FC<AdminGradingViewProps> = ({
 
   const initialPart1Score = calculatePart1Score();
 
-  // Essay Scores State (0 to 10 points each)
+  // Essay Scores State (0, 0.5, or 1 point each)
   const [essayScores, setEssayScores] = useState<Record<number, number>>(() => {
     if (submission.essayScores) {
       return { ...submission.essayScores };
@@ -56,8 +56,8 @@ export const AdminGradingView: React.FC<AdminGradingViewProps> = ({
     const initial: Record<number, number> = {};
     part2Questions.forEach((q) => {
       const ans = submission.answers.essays[q.id];
-      // If candidate wrote something substantive, prefill a default recommendation or 0
-      initial[q.id] = ans && ans.trim().length > 10 ? 8 : 0;
+      // If candidate wrote something substantive, prefill a default recommendation (1) or 0
+      initial[q.id] = ans && ans.trim().length > 5 ? 1 : 0;
     });
     return initial;
   });
@@ -98,18 +98,18 @@ export const AdminGradingView: React.FC<AdminGradingViewProps> = ({
     }
   }, [submission.id]);
 
-  // Total Essay Score calculation
+  // Total Essay Score calculation (each question 0, 0.5, or 1 point)
   const totalEssayScore: number = Object.keys(essayScores).reduce(
     (sum: number, key: string) => sum + (Number(essayScores[Number(key)]) || 0),
     0
   );
-  const maxEssayScore = part2Questions.length * 10; // 120 points
+  const maxEssayScore = part2Questions.length * 1; // 12 points (1 pt each)
   const totalCombinedScore: number = initialPart1Score + totalEssayScore;
-  const maxCombinedScore: number = part1Questions.length + maxEssayScore; // 13 + 120 = 133
+  const maxCombinedScore: number = part1Questions.length * 1 + maxEssayScore; // 13 + 12 = 25 points
   const scorePercentage = Math.round((totalCombinedScore / maxCombinedScore) * 100);
 
   const handleScoreChange = (questionId: number, score: number) => {
-    const clamped = Math.max(0, Math.min(10, score));
+    const clamped = Math.max(0, Math.min(1, score));
     setEssayScores((prev) => ({
       ...prev,
       [questionId]: clamped,
@@ -126,7 +126,7 @@ export const AdminGradingView: React.FC<AdminGradingViewProps> = ({
   const handleAutoFillFullScore = () => {
     const full: Record<number, number> = {};
     part2Questions.forEach((q) => {
-      full[q.id] = 10;
+      full[q.id] = 1;
     });
     setEssayScores(full);
     setEvaluationStatus('PASSED');
@@ -496,27 +496,31 @@ export const AdminGradingView: React.FC<AdminGradingViewProps> = ({
                   <div className="md:col-span-5 bg-[#161311] p-3 rounded-lg border border-[#4f4634]">
                     <div className="flex items-center justify-between mb-2">
                       <label className="text-xs font-bold text-[#f6be39] font-mono-military">
-                        ให้คะแนนข้อนี้ (0 - 10 คะแนน):
+                        ให้คะแนนข้อนี้ (0, 0.5 หรือ 1 คะแนน):
                       </label>
                       <span className="text-base font-mono-military font-extrabold text-[#f6be39]">
-                        {score} / 10
+                        {score} / 1
                       </span>
                     </div>
 
-                    {/* Quick score buttons */}
-                    <div className="flex items-center gap-1.5">
-                      {[0, 3, 5, 7, 8, 9, 10].map((pt) => (
+                    {/* Quick score buttons: 0, 0.5, 1 */}
+                    <div className="flex items-center gap-2">
+                      {[
+                        { val: 0, label: '0 คะแนน' },
+                        { val: 0.5, label: '0.5 คะแนน' },
+                        { val: 1, label: '1 คะแนน' },
+                      ].map((item) => (
                         <button
-                          key={pt}
+                          key={item.val}
                           type="button"
-                          onClick={() => handleScoreChange(q.id, pt)}
-                          className={`flex-1 py-1.5 rounded text-xs font-mono-military font-bold transition-all ${
-                            score === pt
-                              ? 'bg-[#f6be39] text-[#402d00] shadow-[0_0_8px_rgba(246,190,57,0.4)] scale-105'
+                          onClick={() => handleScoreChange(q.id, item.val)}
+                          className={`flex-1 py-2 rounded text-xs font-mono-military font-bold transition-all cursor-pointer ${
+                            score === item.val
+                              ? 'bg-[#f6be39] text-[#402d00] shadow-[0_0_10px_rgba(246,190,57,0.5)] scale-105 border border-[#ffdfa0]'
                               : 'bg-[#1f1b19] text-[#d3c5ae] hover:bg-[#2e2927] border border-[#4f4634]'
                           }`}
                         >
-                          {pt}
+                          {item.label}
                         </button>
                       ))}
                     </div>
