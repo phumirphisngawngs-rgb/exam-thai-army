@@ -1,11 +1,21 @@
 import React from 'react';
-import { Landmark, Shield, Award } from 'lucide-react';
+import { Landmark, Shield, Award, Lock, UserCheck } from 'lucide-react';
+
+export type AppTab =
+  | 'registration'
+  | 'examination'
+  | 'confirmation'
+  | 'verification'
+  | 'admin-login'
+  | 'admin-dashboard'
+  | 'admin-grading';
 
 interface HeaderProps {
-  currentTab: 'registration' | 'examination' | 'confirmation' | 'verification';
-  onNavigate: (tab: 'registration' | 'examination' | 'confirmation' | 'verification') => void;
+  currentTab: AppTab;
+  onNavigate: (tab: AppTab) => void;
   hasActiveSession: boolean;
   hasSubmission: boolean;
+  isAdminAuthenticated?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -13,7 +23,13 @@ export const Header: React.FC<HeaderProps> = ({
   onNavigate,
   hasActiveSession,
   hasSubmission,
+  isAdminAuthenticated = false,
 }) => {
+  const isAdminTab =
+    currentTab === 'admin-login' ||
+    currentTab === 'admin-dashboard' ||
+    currentTab === 'admin-grading';
+
   return (
     <header className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 sm:px-8 md:px-12 h-20 bg-[#110d0c]/95 backdrop-blur-md border-b-2 border-[#f6be39]/20 shadow-[0_4px_24px_rgba(0,0,0,0.8)]">
       {/* Brand & Seal */}
@@ -39,7 +55,7 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Nav links */}
-      <nav className="hidden md:flex items-center gap-6 lg:gap-8">
+      <nav className="hidden md:flex items-center gap-4 lg:gap-7">
         <button
           onClick={() => onNavigate('registration')}
           className={`font-semibold text-sm tracking-wide transition-all pb-1 ${
@@ -81,10 +97,43 @@ export const Header: React.FC<HeaderProps> = ({
         >
           Verification (การตรวจสอบ)
         </button>
+
+        {/* Admin Navigation Tab */}
+        <button
+          onClick={() => {
+            if (isAdminAuthenticated) {
+              onNavigate('admin-dashboard');
+            } else {
+              onNavigate('admin-login');
+            }
+          }}
+          className={`font-semibold text-sm tracking-wide transition-all pb-1 flex items-center gap-1.5 ${
+            isAdminTab
+              ? 'text-[#f6be39] border-b-2 border-[#f6be39] font-bold drop-shadow-[0_0_8px_rgba(246,190,57,0.4)]'
+              : 'text-[#d3c5ae] hover:text-[#f6be39] hover:bg-[#2e2927]/50 px-2.5 py-1 rounded border border-[#f6be39]/30 bg-[#161311]/60'
+          }`}
+        >
+          <Lock className="w-3.5 h-3.5 text-[#f6be39]" />
+          <span>ระบบผู้ดูแล (Admin)</span>
+        </button>
       </nav>
 
       {/* Quick Action Icons */}
-      <div className="flex items-center gap-3 md:gap-4 text-[#f6be39]">
+      <div className="flex items-center gap-2 sm:gap-3 text-[#f6be39]">
+        <button
+          title="เข้าสู่ระบบผู้ดูแล (Admin Portal)"
+          onClick={() => {
+            if (isAdminAuthenticated) {
+              onNavigate('admin-dashboard');
+            } else {
+              onNavigate('admin-login');
+            }
+          }}
+          className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded bg-[#1f1b19] border border-[#f6be39]/40 hover:bg-[#2e2927] hover:border-[#f6be39] transition-all"
+        >
+          <Lock className="w-3.5 h-3.5 text-[#f6be39]" />
+          <span className="hidden sm:inline">Admin</span>
+        </button>
         <button
           title="สถานะระบบสถาบัน"
           onClick={() => onNavigate('verification')}

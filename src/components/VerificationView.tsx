@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
-import { Search, ShieldCheck, Clock, CheckCircle2, AlertCircle, FileBadge, ArrowLeft } from 'lucide-react';
+import { Search, ShieldCheck, Clock, CheckCircle2, XCircle, AlertCircle, FileBadge, ArrowLeft, Award, UserCheck } from 'lucide-react';
 import { ExamSubmission } from '../types';
 
 interface VerificationViewProps {
   submissions: ExamSubmission[];
   onBackToPortal: () => void;
+  onNavigateToAdmin?: () => void;
 }
 
 export const VerificationView: React.FC<VerificationViewProps> = ({
   submissions,
   onBackToPortal,
+  onNavigateToAdmin,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSubmission, setSelectedSubmission] = useState<ExamSubmission | null>(
@@ -23,7 +25,8 @@ export const VerificationView: React.FC<VerificationViewProps> = ({
       sub.id.toLowerCase().includes(query) ||
       sub.candidate.username.toLowerCase().includes(query) ||
       sub.candidate.discord.toLowerCase().includes(query) ||
-      sub.candidate.courseName.toLowerCase().includes(query)
+      sub.candidate.courseName.toLowerCase().includes(query) ||
+      sub.candidate.rank.toLowerCase().includes(query)
     );
   });
 
@@ -34,7 +37,7 @@ export const VerificationView: React.FC<VerificationViewProps> = ({
         <div>
           <button
             onClick={onBackToPortal}
-            className="inline-flex items-center gap-1.5 text-xs text-[#d3c5ae] hover:text-[#f6be39] mb-2 transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs text-[#d3c5ae] hover:text-[#f6be39] mb-2 transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" />
             กลับสู่หน้าหลัก
@@ -62,8 +65,8 @@ export const VerificationView: React.FC<VerificationViewProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left: Submissions list */}
         <div className="lg:col-span-5 space-y-3">
-          <div className="text-xs font-semibold text-[#9b8f7a] uppercase tracking-wider mb-2">
-            รายการส่งข้อสอบทั้งหมด ({filteredSubmissions.length})
+          <div className="text-xs font-semibold text-[#9b8f7a] uppercase tracking-wider mb-2 flex justify-between items-center">
+            <span>รายการส่งข้อสอบทั้งหมด ({filteredSubmissions.length})</span>
           </div>
 
           {filteredSubmissions.length === 0 ? (
@@ -73,6 +76,10 @@ export const VerificationView: React.FC<VerificationViewProps> = ({
           ) : (
             filteredSubmissions.map((sub) => {
               const isSelected = selectedSubmission?.id === sub.id;
+              const isPassed = sub.status === 'PASSED';
+              const isFailed = sub.status === 'FAILED';
+              const isPending = sub.status === 'PENDING_REVIEW';
+
               return (
                 <div
                   key={sub.id}
@@ -98,10 +105,24 @@ export const VerificationView: React.FC<VerificationViewProps> = ({
 
                   <div className="flex justify-between items-center text-[11px] text-[#9b8f7a] mt-2 pt-2 border-t border-[#4f4634]/40">
                     <span>{sub.formattedDate}</span>
-                    <span className="inline-flex items-center gap-1 text-amber-400 font-medium">
-                      <Clock className="w-3 h-3" />
-                      รอการตรวจ
-                    </span>
+                    {isPending && (
+                      <span className="inline-flex items-center gap-1 text-amber-400 font-medium">
+                        <Clock className="w-3 h-3" />
+                        รอการตรวจ
+                      </span>
+                    )}
+                    {isPassed && (
+                      <span className="inline-flex items-center gap-1 text-emerald-400 font-medium">
+                        <CheckCircle2 className="w-3 h-3" />
+                        ผ่านการประเมิน
+                      </span>
+                    )}
+                    {isFailed && (
+                      <span className="inline-flex items-center gap-1 text-rose-400 font-medium">
+                        <XCircle className="w-3 h-3" />
+                        ไม่ผ่านเกณฑ์
+                      </span>
+                    )}
                   </div>
                 </div>
               );
@@ -127,10 +148,22 @@ export const VerificationView: React.FC<VerificationViewProps> = ({
                 </div>
 
                 <div className="text-right">
-                  <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded bg-[#de9b32]/20 border border-[#de9b32]/40 text-[#ffb951] font-semibold">
-                    <Clock className="w-3.5 h-3.5" />
-                    PENDING REVIEW
-                  </span>
+                  {selectedSubmission.status === 'PASSED' ? (
+                    <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded bg-emerald-950/80 border border-emerald-500 text-emerald-300 font-bold">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                      PASSED (ผ่านเกณฑ์)
+                    </span>
+                  ) : selectedSubmission.status === 'FAILED' ? (
+                    <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded bg-rose-950/80 border border-rose-500 text-rose-300 font-bold">
+                      <XCircle className="w-3.5 h-3.5 text-rose-400" />
+                      FAILED (ไม่ผ่าน)
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded bg-[#de9b32]/20 border border-[#de9b32]/40 text-[#ffb951] font-semibold">
+                      <Clock className="w-3.5 h-3.5" />
+                      PENDING REVIEW
+                    </span>
+                  )}
                 </div>
               </div>
 
@@ -162,6 +195,22 @@ export const VerificationView: React.FC<VerificationViewProps> = ({
                     {selectedSubmission.id}
                   </span>
                 </div>
+                {selectedSubmission.score !== undefined && (
+                  <div className="flex justify-between pt-2 border-t border-[#4f4634]/60">
+                    <span className="text-[#9b8f7a]">คะแนนที่ได้:</span>
+                    <span className="text-emerald-400 font-mono-military font-bold">
+                      {selectedSubmission.score} / {selectedSubmission.maxScore || 133}
+                    </span>
+                  </div>
+                )}
+                {selectedSubmission.evaluatedBy && (
+                  <div className="flex justify-between">
+                    <span className="text-[#9b8f7a]">ผู้ตรวจประเมิน:</span>
+                    <span className="text-[#f6be39] font-medium">
+                      {selectedSubmission.evaluatedBy}
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Evaluation Status Protocol */}
@@ -176,30 +225,35 @@ export const VerificationView: React.FC<VerificationViewProps> = ({
                     <span>บันทึกและเข้ารหัสชุดคำตอบลงฐานข้อมูลเรียบร้อยแล้ว</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-amber-400 font-bold">⏳</span>
-                    <span>รอการตรวจให้คะแนนข้อสอบปรนัย (Section 1) และอัตนัย (Section 2)</span>
+                    <span className={selectedSubmission.status !== 'PENDING_REVIEW' ? 'text-emerald-400 font-bold' : 'text-amber-400 font-bold'}>
+                      {selectedSubmission.status !== 'PENDING_REVIEW' ? '✓' : '⏳'}
+                    </span>
+                    <span>
+                      {selectedSubmission.status !== 'PENDING_REVIEW'
+                        ? `ตรวจให้คะแนนเรียบร้อยแล้ว (${selectedSubmission.evaluatedAt || 'วันที่ระบุในระบบ'})`
+                        : 'รอการตรวจให้คะแนนข้อสอบปรนัย (13 ข้อ) และข้อเขียน (12 ข้อ)'}
+                    </span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-[#9b8f7a]">○</span>
+                    <span className={selectedSubmission.status === 'PASSED' ? 'text-emerald-400 font-bold' : 'text-[#9b8f7a]'}>
+                      {selectedSubmission.status === 'PASSED' ? '✓' : '○'}
+                    </span>
                     <span>ออกใบรับรองคุณวุฒิ (ATEC Official Certificate) และแจ้งผลผ่าน Discord</span>
                   </li>
                 </ul>
               </div>
 
-              {/* Sample Answers Inspection */}
-              <div className="space-y-3">
-                <h4 className="text-xs font-bold text-[#d3c5ae] uppercase tracking-wider">
-                  สรุปการตอบข้อสอบ:
-                </h4>
-                <div className="text-xs text-[#9b8f7a] bg-[#110d0c] p-3 rounded border border-[#4f4634] space-y-1">
-                  <div>
-                    • ข้อสอบปรนัย: ตอบครบ {Object.keys(selectedSubmission.answers.choices).length} ข้อ
+              {/* Evaluator Notes if available */}
+              {selectedSubmission.notes && (
+                <div className="bg-[#110d0c] p-3.5 rounded border border-[#4f4634] mb-4 text-xs">
+                  <div className="text-[#f6be39] font-bold mb-1 font-mono-military">
+                    ความเห็นจากคณะกรรมการ:
                   </div>
-                  <div>
-                    • ข้อสอบอัตนัย: เขียนตอบครบ {Object.keys(selectedSubmission.answers.essays).length} ข้อ
+                  <div className="text-[#eae1dd] italic">
+                    "{selectedSubmission.notes}"
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           ) : (
             <div className="bg-[#1f1b19] border border-[#4f4634] rounded-xl p-12 text-center text-sm text-[#9b8f7a]">

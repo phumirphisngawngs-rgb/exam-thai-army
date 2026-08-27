@@ -1,20 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { Header } from './components/Header';
+import { Header, AppTab } from './components/Header';
 import { Footer } from './components/Footer';
 import { RegistrationView } from './components/RegistrationView';
 import { ExaminationView } from './components/ExaminationView';
 import { ConfirmationView } from './components/ConfirmationView';
 import { VerificationView } from './components/VerificationView';
+import { AdminLoginView } from './components/AdminLoginView';
+import { AdminDashboardView } from './components/AdminDashboardView';
+import { AdminGradingView } from './components/AdminGradingView';
 import { Modals } from './components/Modals';
 import { CandidateInfo, ExamAnswers, ExamSubmission } from './types';
 import { INITIAL_SUBMISSIONS } from './data/examData';
 
 export default function App() {
-  const [currentTab, setCurrentTab] = useState<
-    'registration' | 'examination' | 'confirmation' | 'verification'
-  >('registration');
+  const [currentTab, setCurrentTab] = useState<AppTab>('registration');
   const [activeCandidate, setActiveCandidate] = useState<CandidateInfo | null>(null);
   const [currentSubmission, setCurrentSubmission] = useState<ExamSubmission | null>(null);
+  const [selectedGradingSubmission, setSelectedGradingSubmission] = useState<ExamSubmission | null>(null);
+
+  // Admin authentication state
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(() => {
+    try {
+      return sessionStorage.getItem('atec_admin_auth') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
   const [submissions, setSubmissions] = useState<ExamSubmission[]>(() => {
     try {
       const saved = localStorage.getItem('atec_exam_submissions');
@@ -37,11 +49,14 @@ export default function App() {
     }
   }, [submissions]);
 
-  // Format date like: "27 AUG 2026, 02:34:37 GMT-7" or localized
+  // Format date like: "27 ส.ค. 2026, 02:34:37 GMT+7"
   const formatTimestamp = (d: Date) => {
-    const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = months[d.getMonth()];
+    const thaiMonths = [
+      'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.',
+      'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'
+    ];
+    const day = d.getDate();
+    const month = thaiMonths[d.getMonth()];
     const year = d.getFullYear();
     const hours = String(d.getHours()).padStart(2, '0');
     const minutes = String(d.getMinutes()).padStart(2, '0');
@@ -98,6 +113,48 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Admin Handlers
+  const handleAdminLoginSuccess = () => {
+    setIsAdminAuthenticated(true);
+    setCurrentTab('admin-dashboard');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleAdminLogout = () => {
+    sessionStorage.removeItem('atec_admin_auth');
+    setIsAdminAuthenticated(false);
+    setSelectedGradingSubmission(null);
+    setCurrentTab('admin-login');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSelectSubmissionForGrading = (sub: ExamSubmission) => {
+    setSelectedGradingSubmission(sub);
+    setCurrentTab('admin-grading');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSaveEvaluation = (updatedSubmission: ExamSubmission) => {
+    setSubmissions((prev) =>
+      prev.map((item) => (item.id === updatedSubmission.id ? updatedSubmission : item))
+    );
+    setSelectedGradingSubmission(updatedSubmission);
+    if (currentSubmission && currentSubmission.id === updatedSubmission.id) {
+      setCurrentSubmission(updatedSubmission);
+    }
+  };
+
+  const handleDeleteSubmission = (id: string) => {
+    setSubmissions((prev) => prev.filter((item) => item.id !== id));
+    if (selectedGradingSubmission?.id === id) {
+      setSelectedGradingSubmission(null);
+      setCurrentTab('admin-dashboard');
+    }
+    if (currentSubmission?.id === id) {
+      setCurrentSubmission(null);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#0F0D0C] text-[#eae1dd] flex flex-col justify-between selection:bg-[#f6be39]/30 selection:text-[#ffdfa0]">
       {/* Top Header */}
@@ -106,12 +163,22 @@ export default function App() {
         onNavigate={setCurrentTab}
         hasActiveSession={!!activeCandidate}
         hasSubmission={!!currentSubmission}
+        isAdminAuthenticated={isAdminAuthenticated}
       />
 
       {/* Main Content View Switcher */}
       <div className="flex-grow pt-20">
         {currentTab === 'registration' && (
-          <RegistrationView onStartExam={handleStartExam} />
+          <RegistrationView
+            onStartExam={handleStartExam}
+            onNavigateToAdmin={() => {
+              if (isAdminAuthenticated) {
+                setCurrentTab('admin-dashboard');
+              } else {
+                setCurrentTab('admin-login');
+              }
+            }}
+          />
         )}
 
         {currentTab === 'examination' && activeCandidate && (
@@ -134,6 +201,31 @@ export default function App() {
           <VerificationView
             submissions={submissions}
             onBackToPortal={() => setCurrentTab('registration')}
+          />
+        )}
+
+        {currentTab === 'admin-login' && (
+          <AdminLoginView
+            onLoginSuccess={handleAdminLoginSuccess}
+            onBackToPortal={() => setCurrentTab('registration')}
+          />
+        )}
+
+        {currentTab === 'admin-dashboard' && (
+          <AdminDashboardView
+            submissions={submissions}
+            onSelectSubmissionForGrading={handleSelectSubmissionForGrading}
+            onDeleteSubmission={handleDeleteSubmission}
+            onLogout={handleAdminLogout}
+            onBackToPortal={() => setCurrentTab('registration')}
+          />
+        )}
+
+        {currentTab === 'admin-grading' && selectedGradingSubmission && (
+          <AdminGradingView
+            submission={selectedGradingSubmission}
+            onSaveEvaluation={handleSaveEvaluation}
+            onBackToDashboard={() => setCurrentTab('admin-dashboard')}
           />
         )}
       </div>

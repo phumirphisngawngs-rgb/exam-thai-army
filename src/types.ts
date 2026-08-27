@@ -23,6 +23,8 @@ export interface Question {
   options?: ChoiceOption[];
   minWords?: number;
   maxWords?: number;
+  correctOptionId?: string; // Correct answer key for multiple choice
+  modelAnswerKey?: string; // Standard guidance for essay grading
 }
 
 export interface ExamAnswers {
@@ -40,8 +42,13 @@ export interface ExamSubmission {
   answers: ExamAnswers;
   status: 'PENDING_REVIEW' | 'PASSED' | 'FAILED';
   evaluatedBy?: string;
+  evaluatedAt?: string;
   score?: number;
   maxScore?: number;
+  choiceScore?: number;
+  essayScore?: number;
+  essayScores?: Record<number, number>;
+  essayFeedbacks?: Record<number, string>;
   notes?: string;
 }
 

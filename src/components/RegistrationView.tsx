@@ -5,9 +5,13 @@ import { OFFICIAL_COURSES } from '../data/examData';
 
 interface RegistrationViewProps {
   onStartExam: (candidate: CandidateInfo) => void;
+  onNavigateToAdmin?: () => void;
 }
 
-export const RegistrationView: React.FC<RegistrationViewProps> = ({ onStartExam }) => {
+export const RegistrationView: React.FC<RegistrationViewProps> = ({
+  onStartExam,
+  onNavigateToAdmin,
+}) => {
   const [username, setUsername] = useState('');
   const [discord, setDiscord] = useState('');
   const [rank, setRank] = useState('');
@@ -258,16 +262,26 @@ export const RegistrationView: React.FC<RegistrationViewProps> = ({ onStartExam 
             )}
           </button>
 
-          {/* Quick Demo Helper */}
-          <div className="pt-2 text-center">
+          {/* Quick Demo Helper & Admin Access */}
+          <div className="pt-3 flex flex-wrap items-center justify-between gap-2 text-center">
             <button
               type="button"
               onClick={handleAutoFillSample}
               className="inline-flex items-center gap-1.5 text-xs text-[#d3c5ae]/70 hover:text-[#f6be39] transition-colors py-1 px-2.5 rounded border border-[#4f4634]/60 bg-[#161311]/50 hover:bg-[#231f1d]"
             >
               <Sparkles className="w-3.5 h-3.5 text-[#f6be39]" />
-              คลิกเพื่อเติมข้อมูลตัวอย่าง (Quick Autofill Demo)
+              คลิกเพื่อเติมข้อมูลตัวอย่าง
             </button>
+
+            {onNavigateToAdmin && (
+              <button
+                type="button"
+                onClick={onNavigateToAdmin}
+                className="inline-flex items-center gap-1 text-xs text-[#f6be39]/80 hover:text-[#f6be39] hover:underline transition-colors py-1 px-2.5"
+              >
+                <span>สำหรับผู้ดูแล (Admin Login) →</span>
+              </button>
+            )}
           </div>
         </form>
       </div>
