@@ -79,6 +79,25 @@ export const AdminGradingView: React.FC<AdminGradingViewProps> = ({
   );
   const [isSavedToast, setIsSavedToast] = useState(false);
 
+  // Sync state if submission updates from cloud
+  useEffect(() => {
+    if (submission.essayScores) {
+      setEssayScores(submission.essayScores);
+    }
+    if (submission.essayFeedbacks) {
+      setEssayFeedbacks(submission.essayFeedbacks);
+    }
+    if (submission.evaluatedBy) {
+      setEvaluatorName(submission.evaluatedBy);
+    }
+    if (submission.notes) {
+      setEvaluatorNote(submission.notes);
+    }
+    if (submission.status === 'PASSED' || submission.status === 'FAILED') {
+      setEvaluationStatus(submission.status);
+    }
+  }, [submission.id]);
+
   // Total Essay Score calculation
   const totalEssayScore: number = Object.keys(essayScores).reduce(
     (sum: number, key: string) => sum + (Number(essayScores[Number(key)]) || 0),

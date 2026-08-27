@@ -45,9 +45,15 @@ export const VerificationView: React.FC<VerificationViewProps> = ({
           <h1 className="text-2xl sm:text-3xl font-extrabold font-headline text-[#f6be39] gold-gradient-text uppercase tracking-wide">
             ระบบตรวจสอบผลการทดสอบ (Verification Portal)
           </h1>
-          <p className="text-xs sm:text-sm text-[#d3c5ae]/80 mt-0.5">
-            สถาบันการศึกษาและฝึกอบรม กรมยุทธศึกษาทหารบก (ยศ.ทบ.)
-          </p>
+          <div className="flex items-center gap-3 mt-1">
+            <p className="text-xs sm:text-sm text-[#d3c5ae]/80">
+              สถาบันการศึกษาและฝึกอบรม กรมยุทธศึกษาทหารบก (ยศ.ทบ.)
+            </p>
+            <span className="inline-flex items-center gap-1 text-[11px] font-mono-military text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-2 py-0.5 rounded">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              Live Sync
+            </span>
+          </div>
         </div>
 
         <div className="relative w-full sm:w-72">

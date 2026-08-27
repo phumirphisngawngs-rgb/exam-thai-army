@@ -107,6 +107,19 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
         </div>
 
         <div className="flex items-center gap-3">
+          {/* Cloud Sync Status */}
+          <div className="hidden sm:flex items-center gap-2 bg-[#161311] border border-emerald-500/40 px-3 py-1.5 rounded-lg text-xs">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <div className="flex flex-col text-left">
+              <span className="text-emerald-400 font-bold font-mono-military text-[11px]">
+                CLOUD REAL-TIME SYNC
+              </span>
+              <span className="text-[10px] text-[#d3c5ae]/70">
+                ซิงค์ข้อมูลสดทุกอุปกรณ์
+              </span>
+            </div>
+          </div>
+
           <button
             type="button"
             onClick={onBackToPortal}

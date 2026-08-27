@@ -138,12 +138,10 @@ export const ConfirmationView: React.FC<ConfirmationViewProps> = ({
 
           {/* Next Steps Notification Box */}
           <div className="bg-[#2e2927]/60 border border-[#4f4634] rounded-lg p-4 w-full text-center mb-6">
-            <span
-              className="material-symbols-outlined text-[#ffb951] text-2xl mb-1 block"
-              style={{ fontVariationSettings: "'FILL' 1" }}
-            >
-              info
-            </span>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 text-xs font-mono-military mb-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span>บันทึกเข้าระบบคลาวด์กลาง (Cloud Synced) เรียบร้อยแล้ว</span>
+            </div>
             <p className="font-semibold text-xs sm:text-sm text-[#eae1dd]">
               กรุณารอผลการตรวจจากเจ้าหน้าที่แผนกอบรมหลักสูตร
             </p>

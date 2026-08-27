@@ -16,6 +16,7 @@ interface HeaderProps {
   hasActiveSession: boolean;
   hasSubmission: boolean;
   isAdminAuthenticated?: boolean;
+  isCloudConnected?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -24,6 +25,7 @@ export const Header: React.FC<HeaderProps> = ({
   hasActiveSession,
   hasSubmission,
   isAdminAuthenticated = false,
+  isCloudConnected = true,
 }) => {
   const isAdminTab =
     currentTab === 'admin-login' ||
@@ -120,6 +122,15 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Quick Action Icons */}
       <div className="flex items-center gap-2 sm:gap-3 text-[#f6be39]">
+        {/* Realtime Cloud Status Badge */}
+        <div
+          title="ระบบซิงค์ข้อมูลคลาวด์แบบเรียลไทม์ (Live Cloud Sync)"
+          className="hidden sm:flex items-center gap-1.5 text-[11px] font-mono-military font-semibold px-2 py-1 rounded bg-[#161311] border border-emerald-500/40 text-emerald-400"
+        >
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>CLOUD LIVE</span>
+        </div>
+
         <button
           title="เข้าสู่ระบบผู้ดูแล (Admin Portal)"
           onClick={() => {

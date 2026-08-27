@@ -1,0 +1,29 @@
+{
+  "entities": {
+    "submissions": {
+      "title": "Exam Submission",
+      "description": "Student exam submissions with grading details and candidate info",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "candidate": { "type": "object" },
+        "timestamp": { "type": "string" },
+        "formattedDate": { "type": "string" },
+        "timeSpentSeconds": { "type": "number" },
+        "timeSpentFormatted": { "type": "string" },
+        "answers": { "type": "object" },
+        "status": { "type": "string" },
+        "score": { "type": "number" },
+        "maxScore": { "type": "number" },
+        "essayScores": { "type": "object" },
+        "notes": { "type": "string" },
+        "evaluatedBy": { "type": "string" },
+        "evaluatedAt": { "type": "string" }
+      },
+      "required": ["id", "candidate", "timestamp", "status"]
+    }
+  },
+  "firestore": {
+    "rules": "rules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    match /submissions/{submissionId} {\n      allow read, write: if true;\n    }\n  }\n}"
+  }
+}
